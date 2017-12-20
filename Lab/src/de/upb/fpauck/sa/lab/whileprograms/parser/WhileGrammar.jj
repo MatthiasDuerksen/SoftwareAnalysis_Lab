@@ -72,7 +72,7 @@ void programm() :
     handler.programStart();
   }
   (
-    statement1()
+    statement()
   )+
   < EOF >
 }
@@ -155,7 +155,7 @@ void whileloop() :
 }
 {
   "while" 
-  // FIXME: Something is missing here.
+  booleanExpression()
   "do"
   (
     statement()
@@ -210,7 +210,9 @@ void variableOrNumber() :
 
 // FIXME: Something is missing here.
 void variable() :
-{}
+{
+	Token t1;
+}
 {
   t1 = < VARIABLE >
   {

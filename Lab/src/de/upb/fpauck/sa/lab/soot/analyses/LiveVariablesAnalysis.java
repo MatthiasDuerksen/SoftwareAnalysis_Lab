@@ -24,6 +24,10 @@ public class LiveVariablesAnalysis extends BackwardFlowAnalysis<Unit, FlowSet<St
 
 		// Compute all occurring variables
 		// TODO: Implement this
+		while(graph.iterator().hasNext()){
+			Unit unit = graph.iterator().next();
+			//unit.
+		}
 
 		doAnalysis();
 	}

@@ -1,10 +1,15 @@
 package de.upb.fpauck.sa.lab.whileprograms.analyses;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.upb.fpauck.sa.lab.whileprograms.datastructure.Assignment;
+import de.upb.fpauck.sa.lab.whileprograms.datastructure.IfBranch;
 import de.upb.fpauck.sa.lab.whileprograms.datastructure.Statement;
+import de.upb.fpauck.sa.lab.whileprograms.datastructure.WhileLoop;
+import de.upb.fpauck.sa.lab.whileprograms.framework.Helper;
 import de.upb.fpauck.sa.lab.whileprograms.framework.UniqueArrayList;
 
 public class LiveVariablesAnalysis implements IWhileAnalysis {
@@ -24,10 +29,17 @@ public class LiveVariablesAnalysis implements IWhileAnalysis {
 		// Compute all occurring variables
 		List<String> allVariables = new UniqueArrayList<>();
 		// TODO: Implement this
+		allVariables.add(Helper.getIsolatedExit(program).getDefVariable());
 
 		// Initialize analysis information
 		analysisInformation = new HashMap<>();
 		// TODO: Implement this
+		
+		UniqueArrayList<IAnalysisInformation> list = new UniqueArrayList<>();
+		for(String var : allVariables){
+			list.add(new LiveVariable(var));
+		}
+		analysisInformation.put(program, list);
 
 		return analysisInformation;
 	}
@@ -46,7 +58,37 @@ public class LiveVariablesAnalysis implements IWhileAnalysis {
 		List<IAnalysisInformation> adaptedAi = new UniqueArrayList<>(analysisInformation);
 
 		// TODO: Implement this
-
+		//kill
+		List<LiveVariable> kill = new UniqueArrayList<>();
+		List<LiveVariable> gen = new UniqueArrayList<>();
+		if(statement instanceof Assignment){
+			Assignment ass = (Assignment)statement;
+			kill.add(new LiveVariable(ass.getDefVariable()));
+			//ass.getUseVariables().forEach(s -> gen.add(new LiveVariable(s)));
+			for(String s : ass.getUseVariables()){
+				gen.add(new LiveVariable(s));
+			}
+		
+			
+		}else if(statement instanceof IfBranch){
+			IfBranch ifb = (IfBranch)statement;
+			//ifb.getUseVariables().forEach(s -> gen.add(new LiveVariable(s)));
+			for(String s : ifb.getUseVariables()){
+				gen.add(new LiveVariable(s));
+			}
+		}
+		else if(statement instanceof WhileLoop){
+			WhileLoop whileloop = (WhileLoop)statement;
+		
+			//whileloop.getUseVariables().forEach(s -> gen.add(new LiveVariable(s)));
+			for(String s  : whileloop.getUseVariables()){
+				gen.add(new LiveVariable(s));
+			}
+		}
+		
+		adaptedAi.removeAll(kill);
+		adaptedAi.addAll(gen);
+		
 		return adaptedAi;
 	}
 
@@ -57,7 +99,10 @@ public class LiveVariablesAnalysis implements IWhileAnalysis {
 	@Override
 	public List<IAnalysisInformation> merge(List<IAnalysisInformation> analysisInformation1,
 			List<IAnalysisInformation> analysisInformation2) {
-		// TODO: Implement this
+		List<IAnalysisInformation> listAll = new UniqueArrayList<IAnalysisInformation>();
+		listAll.addAll(analysisInformation1);
+		listAll.addAll(analysisInformation2);
+		return listAll;
 	}
 
 	/**
@@ -67,6 +112,14 @@ public class LiveVariablesAnalysis implements IWhileAnalysis {
 	@Override
 	public boolean inRelation(List<IAnalysisInformation> first, List<IAnalysisInformation> second) {
 		// TODO: Implement this
+		
+		for(IAnalysisInformation info : first){
+			if(!second.contains(info)){
+				return false;
+			}
+		}
+		
+		return true;
 	}
 
 	/**
@@ -75,5 +128,6 @@ public class LiveVariablesAnalysis implements IWhileAnalysis {
 	@Override
 	public boolean isForward() {
 		// TODO: Implement this
+		return true;
 	}
 }
