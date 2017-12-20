@@ -1,0 +1,11 @@
+x:=2;
+y:=4;
+x:=1;
+
+if y>0 then
+	z:=x;
+else
+	z:=y*y;
+fi
+
+x:=z;

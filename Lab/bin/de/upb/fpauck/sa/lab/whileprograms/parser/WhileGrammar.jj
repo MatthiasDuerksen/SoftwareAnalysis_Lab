@@ -1,0 +1,230 @@
+/*
+ *
+ * Copyright (c) 2006, Sun Microsystems, Inc.
+ * All rights reserved.
+ *
+ */
+
+options
+{
+  ERROR_REPORTING = true;
+  DEBUG_PARSER = false;
+  DEBUG_TOKEN_MANAGER = false;
+  STATIC = false;
+}
+
+PARSER_BEGIN(WhileParser)
+package de.upb.fpauck.sa.lab.whileprograms.parser;
+import de.upb.fpauck.sa.lab.whileprograms.parser.WhileHandler;
+
+public class WhileParser
+{
+  private WhileHandler handler = new WhileHandler();
+
+  public void setHandler(WhileHandler handler)
+  {
+    this.handler = handler;
+  }
+}
+
+PARSER_END(WhileParser)
+
+SKIP :
+{
+  " "
+| "\n"
+| "\r"
+| "\t"
+}
+
+TOKEN :
+{
+  < VARIABLE : [ "a"-"z" ] >
+| 	< NUMBER : ("-")? ([ "0"-"9" ])+ >
+| 	< BOOLEAN :
+    "true"
+  | "false" >
+| 	< ARITHMIC_OPERATOR :
+    "+"
+  | "-"
+  | "*"
+  | "/" >
+| 	< BOOLEAN_OPERATOR :
+    "="
+  | ">"
+  | ">="
+  | "<"
+  | "<="
+  | "!=" >
+| 	< CONNECT_OPERATOR :
+    "AND"
+  | "OR"
+  | "&"
+  | "|" >
+| 	< NOT_OPERATOR : "!" >
+}
+
+// FIXME: Something is wrong here.
+void programm() :
+{}
+{
+  {
+    handler.programStart();
+  }
+  (
+    statement1()
+  )+
+  < EOF >
+}
+
+void statement() :
+{}
+{
+  {
+    handler.skipBegin();
+  }
+  "skip" ";"
+  {
+    handler.skipEnd();
+  }
+|
+  {
+    handler.assignmentBegin();
+  }
+  assignment()
+  {
+    handler.assignmentEnd();
+  }
+|
+  {
+    handler.ifBegin();
+  }
+  ifbranch()
+  {
+    handler.ifEnd();
+  }
+|
+  {
+    handler.whileBegin();
+  }
+  whileloop()
+  {
+    handler.whileEnd();
+  }
+}
+
+void assignment() :
+{}
+{
+  variable() ":=" 
+  arithmeticExpression() ";"
+}
+
+void ifbranch() :
+{
+  Token t1;
+}
+{
+  "if" booleanExpression()
+  (
+    t1 = < CONNECT_OPERATOR >
+    {
+      handler.operatorFound(t1.toString());
+    }
+    booleanExpression()
+  )*
+  "then"
+  (
+    statement()
+  )+
+  (
+    {
+      handler.elseBegin();
+    }
+    "else"
+    (
+      statement()
+    )+
+  )?
+  "fi" (";")?
+}
+
+void whileloop() :
+{
+  Token t1;
+}
+{
+  "while" 
+  // FIXME: Something is missing here.
+  "do"
+  (
+    statement()
+  )+
+  "od" (";")?
+}
+
+void arithmeticExpression() :
+{
+  Token t1;
+}
+{
+  variableOrNumber()
+  (
+    t1 = < ARITHMIC_OPERATOR >
+    {
+      handler.operatorFound(t1.toString());
+    }
+    arithmeticExpression()
+  )?
+}
+
+void booleanExpression() :
+{
+  Token t1;
+}
+{
+  arithmeticExpression() t1 = < BOOLEAN_OPERATOR >
+  {
+    handler.operatorFound(t1.toString());
+  }
+  arithmeticExpression()
+| 	booleanValue()
+| 	t1 = < NOT_OPERATOR >
+  {
+    handler.operatorFound(t1.toString());
+  }
+  booleanExpression()
+}
+
+void variableOrNumber() :
+{
+  Token t1;
+}
+{
+  variable()
+| 	t1 = < NUMBER >
+  {
+    handler.valueFound(t1.toString());
+  }
+}
+
+// FIXME: Something is missing here.
+void variable() :
+{}
+{
+  t1 = < VARIABLE >
+  {
+    handler.variableFound(t1.toString());
+  }
+}
+
+void booleanValue() :
+{
+  Token t1;
+}
+{
+  t1 = < BOOLEAN >
+  {
+    handler.valueFound(t1.toString());
+  }
+}
