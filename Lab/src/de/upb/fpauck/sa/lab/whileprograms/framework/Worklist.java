@@ -68,17 +68,24 @@ public class Worklist {
 	public void run() {
 		// Worklist algorithm
 		// TODO: Implement worklist algorithm here
+		
 		try {
 			FileWriter writer = new FileWriter("test.csv");
 			while (worklist.size() > 0) {
 				Edge edge = worklist.pop();
 				List<IAnalysisInformation> ai_l = analysisInformation.get(edge.getFrom());
 				List<IAnalysisInformation> ai_lPrime = analysisInformation.get(edge.getTo());
-
+System.out.println("Line befor debug");
 				if (debug) {
-
-					for (IAnalysisInformation a : ai_l) {
-						writer.append(a + ";");
+					for (List<IAnalysisInformation> ai : analysisInformation.values()) {
+						if (ai == null) {
+							writer.append(" -- ");
+						} else {
+							for (IAnalysisInformation a : ai) {
+								writer.append(a + " | ");
+							}
+						}
+						writer.append(";");
 					}
 					writer.append(worklist + "\n");
 
