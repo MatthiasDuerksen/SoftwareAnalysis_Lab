@@ -15,7 +15,7 @@ public class A3While {
 		FrameworkNaive<ReachingDefinitionAnalysis> fwN = new FrameworkNaive<>(args, ReachingDefinitionAnalysis.class);
 		fwN.run();
 
-		System.out.println();
+		System.out.println("----------------");
 
 		// Worklist
 		FrameworkWorklist<ReachingDefinitionAnalysis> fwW = new FrameworkWorklist<>(args,

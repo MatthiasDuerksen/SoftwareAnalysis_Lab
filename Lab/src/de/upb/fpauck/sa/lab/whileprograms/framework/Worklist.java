@@ -41,27 +41,17 @@ public class Worklist {
 		// Initialize analysis
 		analysisInformation = analysis.init(program);
 
-		System.out.println("-------");
-		for (Statement s : analysisInformation.keySet()) {
-			System.out.println(s.getStatementString() + " -> " + analysisInformation.get(s));
-		}
-		System.out.println("-------");
-
 	}
 
 	private void compute(Statement st, Stack<Edge> helperStack) {
 		for (Statement next : st.getNext()) {
 
-			System.out.println("next: " + next.getStatementString());
-			System.out.println(helperStack);
 
 			Edge edge = new Edge(st, next);
 			if (!helperStack.contains(edge)) {
 				helperStack.add(edge);
 				compute(next, helperStack);
-			} else {
-				System.out.println("lo");
-			}
+			} 
 		}
 	}
 
@@ -75,7 +65,6 @@ public class Worklist {
 				Edge edge = worklist.pop();
 				List<IAnalysisInformation> ai_l = analysisInformation.get(edge.getFrom());
 				List<IAnalysisInformation> ai_lPrime = analysisInformation.get(edge.getTo());
-System.out.println("Line befor debug");
 				if (debug) {
 					for (List<IAnalysisInformation> ai : analysisInformation.values()) {
 						if (ai == null) {
