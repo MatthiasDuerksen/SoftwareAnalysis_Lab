@@ -16,7 +16,7 @@ public class A1While {
 		// Instantiate and run Analysis framework
 		FrameworkNaive<LiveVariablesAnalysis> fw = new FrameworkNaive<>(args, LiveVariablesAnalysis.class);
 		fw.run();
-		
+		System.out.println("new analysis");
 		// Worklist
 				FrameworkWorklist<LiveVariablesAnalysis> fwW = new FrameworkWorklist<>(args,
 						LiveVariablesAnalysis.class);

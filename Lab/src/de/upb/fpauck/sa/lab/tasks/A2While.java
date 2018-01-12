@@ -16,6 +16,8 @@ public class A2While {
 		FrameworkNaive<AvailableExpressionAnalysis> fw = new FrameworkNaive<>(args, AvailableExpressionAnalysis.class);
 		fw.run();
 		
+		System.out.println("new analysis");
+		
 		FrameworkWorklist<AvailableExpressionAnalysis> fwW = new FrameworkWorklist<>(args,
 				AvailableExpressionAnalysis.class);
 		fwW.run();

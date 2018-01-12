@@ -17,7 +17,7 @@ public class FrameworkWorklist<S> {
 	private Worklist worklistAnalysis;
 
 	public FrameworkWorklist(String[] args, Class<S> analysisClass) {
-		boolean debug = false;
+		boolean debug = true;
 		if (args.length > 1) {
 			debug = Boolean.valueOf(args[1]).booleanValue();
 		}

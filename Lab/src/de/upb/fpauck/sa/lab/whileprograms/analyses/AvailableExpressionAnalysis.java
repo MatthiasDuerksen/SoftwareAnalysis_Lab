@@ -23,13 +23,16 @@ public class AvailableExpressionAnalysis implements IWhileAnalysis {
 
 		// Compute all occurring arithmetic expressions
 		// TODO: Implement this
+		
 		compute(program);
 		statementsVisited.clear();
 
 		// Initialize analysis information
 		// TODO: Implement this
 
-		assign(program, analysisInformation);
+		analysisInformation.put(program, new UniqueArrayList());
+		
+		assign(program, analysisInformation,program);
 		statementsVisited.clear();
 
 		return analysisInformation;
@@ -63,16 +66,23 @@ public class AvailableExpressionAnalysis implements IWhileAnalysis {
 
 	}
 
-	private void assign(Statement s, Map<Statement, List<IAnalysisInformation>> analysisInformation) {
+	private void assign(Statement s, Map<Statement, List<IAnalysisInformation>> analysisInformation, Statement program) {
 		if (statementsVisited.contains(s)) {
 			return;
 		} else {
 			statementsVisited.add(s);
 		}
 
+		if(s.equals(program)){
 		analysisInformation.put(s, new UniqueArrayList<>());
+		}else{
+			analysisInformation.put(s, null);
+//			for(AvailableExpression exp : allAExps){
+//				analysisInformation.get(s).add(exp);
+//			}
+		}
 		for (Statement st : s.getNext()) {
-			assign(st, analysisInformation);
+			assign(st, analysisInformation,program);
 		}
 	}
 
@@ -131,6 +141,10 @@ public class AvailableExpressionAnalysis implements IWhileAnalysis {
 			List<IAnalysisInformation> analysisInformation2) {
 		List<IAnalysisInformation> merged = new UniqueArrayList<IAnalysisInformation>();
 		
+		if(analysisInformation1==null){
+			return analysisInformation2;
+		}
+		
 		for(IAnalysisInformation a : analysisInformation1){
 			if(analysisInformation2.contains(a)){
 				merged.add(a);
@@ -143,6 +157,11 @@ public class AvailableExpressionAnalysis implements IWhileAnalysis {
 
 	@Override
 	public boolean inRelation(List<IAnalysisInformation> first, List<IAnalysisInformation> second) {
+		
+		if(second==null){
+			return false;
+		}
+		
 		for (IAnalysisInformation info : first) {
 			if (!second.contains(info)) {
 				return false;

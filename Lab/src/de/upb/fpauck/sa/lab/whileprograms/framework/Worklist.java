@@ -27,22 +27,40 @@ public class Worklist {
 		this.analysis = analysis;
 		this.debug = debug;
 
+		Stack<Edge> helperStack = new Stack<>();
+
 		// Initialize worklist
 		worklist = new Stack<>();
 		// TODO: Initialize the worklist here
-		compute(program);
+		compute(program, helperStack);
+
+		while (!helperStack.isEmpty()) {
+			worklist.push(helperStack.pop());
+		}
 
 		// Initialize analysis
 		analysisInformation = analysis.init(program);
 
+		System.out.println("-------");
+		for (Statement s : analysisInformation.keySet()) {
+			System.out.println(s.getStatementString() + " -> " + analysisInformation.get(s));
+		}
+		System.out.println("-------");
+
 	}
 
-	private void compute(Statement st) {
+	private void compute(Statement st, Stack<Edge> helperStack) {
 		for (Statement next : st.getNext()) {
+
+			System.out.println("next: " + next.getStatementString());
+			System.out.println(helperStack);
+
 			Edge edge = new Edge(st, next);
-			if (!worklist.contains(edge)) {
-				worklist.add(edge);
-				compute(next);
+			if (!helperStack.contains(edge)) {
+				helperStack.add(edge);
+				compute(next, helperStack);
+			} else {
+				System.out.println("lo");
 			}
 		}
 	}
@@ -66,12 +84,13 @@ public class Worklist {
 
 				}
 
-				if (!analysis.inRelation(analysis.phi(ai_l, edge.getFrom()), ai_lPrime)) {
-					analysisInformation.put(edge.getTo(),
-							analysis.merge(ai_lPrime, analysis.phi(ai_l, edge.getFrom())));
+				List<IAnalysisInformation> phi = analysis.phi(ai_l, edge.getFrom());
+				if (!analysis.inRelation(phi, ai_lPrime)) {
+					analysisInformation.put(edge.getTo(), analysis.merge(ai_lPrime, phi));
 					for (Statement next : edge.getTo().getNext()) {
-						if (!worklist.contains(new Edge(edge.getTo(), next))) {
-							worklist.push(new Edge(edge.getTo(), next));
+						Edge newEdge = new Edge(edge.getTo(), next);
+						if (!worklist.contains(newEdge)) {
+							worklist.push(newEdge);
 						}
 					}
 				}
