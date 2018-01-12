@@ -129,14 +129,14 @@ public class Statement {
 
 	@Override
 	public String toString() {
-		List<String> allLines = Arrays.asList(toStringHelp(true).split("\n"));
-		Collections.sort(allLines);
-		StringBuilder sb = new StringBuilder();
-		for (String str : allLines) {
-			sb.append(str + "\n");
-		}
-		return sb.toString();
-		
+//		List<String> allLines = Arrays.asList(toStringHelp(true).split("\n"));
+//		Collections.sort(allLines);
+//		StringBuilder sb = new StringBuilder();
+//		for (String str : allLines) {
+//			sb.append(str + "\n");
+//		}
+//		return sb.toString();
+		return getStatementString();
 	}
 
 	private String toStringHelp(boolean reset) {

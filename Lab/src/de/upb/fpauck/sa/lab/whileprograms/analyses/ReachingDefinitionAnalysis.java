@@ -48,6 +48,8 @@ public class ReachingDefinitionAnalysis implements IWhileAnalysis {
 
 	@Override
 	public List<IAnalysisInformation> phi(List<IAnalysisInformation> analysisInformation, Statement statement) {
+		List<IAnalysisInformation> copy = new UniqueArrayList<IAnalysisInformation>();
+		copy.addAll(analysisInformation);
 		if (statement instanceof Assignment) {
 			Assignment ass = (Assignment) statement;
 			String defVar = ass.getDefVariable();
@@ -63,11 +65,11 @@ public class ReachingDefinitionAnalysis implements IWhileAnalysis {
 			// gen
 			gen.add(new ReachingDefinition(defVar, String.valueOf(statement.getLabel())));
 
-			analysisInformation.removeAll(kill);
-			analysisInformation.addAll(gen);
+			copy.removeAll(kill);
+			copy.addAll(gen);
 
 		}
-		return analysisInformation;
+		return copy;
 
 	}
 
