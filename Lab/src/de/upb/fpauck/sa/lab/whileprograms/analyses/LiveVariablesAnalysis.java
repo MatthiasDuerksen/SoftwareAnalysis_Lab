@@ -50,8 +50,13 @@ public class LiveVariablesAnalysis implements IWhileAnalysis {
 	}
 
 	void assignLiveVariables(Statement st, Map<Statement, List<IAnalysisInformation>> map, List<IAnalysisInformation> allV) {
+		if(st.getNext().isEmpty()){
 		map.put(st, allV);
+		}else{
+			map.put(st, new UniqueArrayList<IAnalysisInformation>());
+		}
 		for (Statement succ : st.getNext()) {
+	
 			assignLiveVariables(succ, map, allV);
 		}
 	}

@@ -28,12 +28,8 @@ public class AvailableExpressionAnalysis implements IWhileAnalysis {
 
 		// Initialize analysis information
 		// TODO: Implement this
-		List<IAnalysisInformation> l = new UniqueArrayList<IAnalysisInformation>();
-		for (AvailableExpression ex : allAExps) {
-			l.add((IAnalysisInformation) ex);
-		}
 
-		assign(program, analysisInformation, l);
+		assign(program, analysisInformation);
 		statementsVisited.clear();
 
 		return analysisInformation;
@@ -67,17 +63,16 @@ public class AvailableExpressionAnalysis implements IWhileAnalysis {
 
 	}
 
-	private void assign(Statement s, Map<Statement, List<IAnalysisInformation>> analysisInformation,
-			List<IAnalysisInformation> l) {
+	private void assign(Statement s, Map<Statement, List<IAnalysisInformation>> analysisInformation) {
 		if (statementsVisited.contains(s)) {
 			return;
 		} else {
 			statementsVisited.add(s);
 		}
 
-		analysisInformation.put(s, /*l*/new UniqueArrayList<>());
+		analysisInformation.put(s, new UniqueArrayList<>());
 		for (Statement st : s.getNext()) {
-			assign(st, analysisInformation, l);
+			assign(st, analysisInformation);
 		}
 	}
 
@@ -96,6 +91,7 @@ public class AvailableExpressionAnalysis implements IWhileAnalysis {
 				}
 			}
 		}
+		
 
 		// gen
 		List<AvailableExpression> gen = new UniqueArrayList<AvailableExpression>();
@@ -120,8 +116,10 @@ public class AvailableExpressionAnalysis implements IWhileAnalysis {
 		} else if (statement instanceof WhileLoop || statement instanceof IfBranch) {
 			gen.add(mapStatementExpression.get(statement));
 		}
+		
 
-		List<IAnalysisInformation> adaptedAi = new UniqueArrayList<IAnalysisInformation>();
+
+		List<IAnalysisInformation> adaptedAi = new UniqueArrayList<IAnalysisInformation>(analysisInformation);
 		adaptedAi.removeAll(kill);
 		adaptedAi.addAll(gen);
 
@@ -132,12 +130,15 @@ public class AvailableExpressionAnalysis implements IWhileAnalysis {
 	public List<IAnalysisInformation> merge(List<IAnalysisInformation> analysisInformation1,
 			List<IAnalysisInformation> analysisInformation2) {
 		List<IAnalysisInformation> merged = new UniqueArrayList<IAnalysisInformation>();
-		merged.addAll(analysisInformation1);
-		merged.addAll(analysisInformation2);
 		
-		List<IAnalysisInformation> lst = new UniqueArrayList<IAnalysisInformation>();
-		lst.addAll(merged);
-		return lst;
+		for(IAnalysisInformation a : analysisInformation1){
+			if(analysisInformation2.contains(a)){
+				merged.add(a);
+			}
+		}
+		
+		
+		return merged;
 	}
 
 	@Override
