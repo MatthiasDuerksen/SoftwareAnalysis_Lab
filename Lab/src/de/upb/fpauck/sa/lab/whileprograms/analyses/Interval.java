@@ -1,12 +1,16 @@
 package de.upb.fpauck.sa.lab.whileprograms.analyses;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Interval implements IAnalysisInformation {
 	public static final String PLUS_INFINITY = "+inf";
 	public static final String MINUS_INFINITY = "-inf";
+	public static final String UNKNOWN = "?";
 
 	private String variable;
-	private String from;
-	private String to;
+	 String from;
+	 String to;
 
 	public Interval(String variable, String from, String to) {
 		super();
@@ -46,12 +50,112 @@ public class Interval implements IAnalysisInformation {
 
 		return new Interval(interval1.variable, z1, z2);
 	}
-	
-	
-	
-	public Interval plus(Interval interval){
-		int i = parse(from)+parse(interval.from);
-		throw new IllegalArgumentException();
+
+	private String plus(String n1, String n2) {
+		if (n1.equals(PLUS_INFINITY) || n2.equals(PLUS_INFINITY)) {
+			return PLUS_INFINITY;
+		}
+		if (n1.equals(MINUS_INFINITY) || n2.equals(MINUS_INFINITY)) {
+			return MINUS_INFINITY;
+		} else {
+			int result = Integer.parseInt(n1) + Integer.parseInt(n2);
+			return String.valueOf(result);
+		}
+	}
+
+	private String minus(String n1, String n2) {
+		if (n1.equals(MINUS_INFINITY) || n2.equals(PLUS_INFINITY)) {
+			return MINUS_INFINITY;
+		}
+		if (n1.equals(PLUS_INFINITY) || n2.equals(MINUS_INFINITY)) {
+			return PLUS_INFINITY;
+		} else {
+			int result = Integer.parseInt(n1) - Integer.parseInt(n2);
+			return String.valueOf(result);
+		}
+	}
+
+	private String times(String n1, String n2) {
+		if (n1.equals(MINUS_INFINITY) || n2.equals(PLUS_INFINITY)) {
+			return MINUS_INFINITY;
+		}
+		if (n1.equals(PLUS_INFINITY) || n2.equals(MINUS_INFINITY)) {
+			return MINUS_INFINITY;
+		} else if (n1.equals(PLUS_INFINITY) || n2.equals(PLUS_INFINITY)) {
+			return PLUS_INFINITY;
+		}
+
+		else if (n1.equals(MINUS_INFINITY) || n2.equals(MINUS_INFINITY)) {
+			return PLUS_INFINITY;
+		} else {
+			int result = Integer.parseInt(n1) * Integer.parseInt(n2);
+			return String.valueOf(result);
+		}
+	}
+
+	public Interval plus(Interval interval) {
+		return new Interval(UNKNOWN, plus(from, interval.from), plus(to, interval.to));
+
+	}
+
+	public Interval minus(Interval interval) {
+		return new Interval(UNKNOWN, minus(from, interval.to), minus(to, interval.from));
+
+	}
+
+	 boolean smaller(String n1, String n2) {
+		if (n1.equals(PLUS_INFINITY)) {
+			return false;
+		} else if (n2.equals(PLUS_INFINITY)) {
+			return true;
+		} else if (n1.equals(MINUS_INFINITY)) {
+			return true;
+		} else if (n2.equals(MINUS_INFINITY)) {
+			return false;
+		}
+
+		else {
+			return Integer.parseInt(n1) <= Integer.parseInt(n2);
+		}
+	}
+
+	 boolean greater(String n1, String n2) {
+		if (n1.equals(PLUS_INFINITY)) {
+			return true;
+		} else if (n2.equals(PLUS_INFINITY)) {
+			return false;
+		} else if (n1.equals(MINUS_INFINITY)) {
+			return false;
+		} else if (n2.equals(MINUS_INFINITY)) {
+			return true;
+		}
+
+		else {
+			return Integer.parseInt(n1) >= Integer.parseInt(n2);
+		}
+	}
+
+	public Interval times(Interval interval) {
+
+		String[] array = new String[4];
+		array[0] = times(from, interval.to);
+		array[1] = times(from, interval.from);
+		array[2] = times(to, interval.to);
+		array[3] = times(to, interval.from);
+
+		String min = PLUS_INFINITY;
+		String max = MINUS_INFINITY;
+		for (int i = 0; i < array.length; i++) {
+			if (greater(array[i], max)) {
+				max = array[i];
+			}
+			if (smaller(array[i], min)) {
+				min = array[i];
+			}
+		}
+
+		return new Interval(UNKNOWN, min, max);
+
 	}
 
 	@Override
@@ -66,5 +170,14 @@ public class Interval implements IAnalysisInformation {
 	@Override
 	public String toString() {
 		return "(" + variable + " -> [" + from + ", " + to + "])";
+	}
+
+	public Object getVariable() {
+		return variable;
+	}
+
+	public void setVariable(String defVar) {
+		this.variable=defVar;
+		
 	}
 }

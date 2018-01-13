@@ -61,6 +61,7 @@ public class Worklist {
 		
 		try {
 			FileWriter writer = new FileWriter("test.csv");
+			int i=0;
 			while (worklist.size() > 0) {
 				Edge edge = worklist.pop();
 				List<IAnalysisInformation> ai_l = analysisInformation.get(edge.getFrom());
@@ -100,6 +101,7 @@ public class Worklist {
 			}
 		} catch (Exception e) {
 
+			System.out.println(e);
 		}
 
 		// Output result
